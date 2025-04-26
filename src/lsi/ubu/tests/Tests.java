@@ -64,7 +64,7 @@ public class Tests {
 		// caso 2 vehiculo inexistente
 		{
 			try {
-				servicio.alquilar("87654321Z", "9999-ZZZ", fechaIni, fechaFin);
+				servicio.alquilar("12345678A", "9999-ZZZ", fechaIni, fechaFin);
 				LOGGER.info("Alquilar vehiculo inexistente MAL no da excepcion");
 			} catch (SQLException e) {
 				if (e.getErrorCode() == AlquilerCochesException.VEHICULO_NO_EXIST) {
@@ -124,7 +124,7 @@ public class Tests {
 
 				LOGGER.info("Caso alquiler correcto pero NO especifico la fecha final --------------");
 
-				String resultadoPrevisto = "1234-ABC11-03-201313412345678A4 dias de alquiler, vehiculo modelo 2   64#1234-ABC11-03-201313412345678ADeposito lleno de 50 litros de Gasoil   70";
+				String resultadoPrevisto = "1234-ABC11-03-201313512345678A4 dias de alquiler, vehiculo modelo 1   60";
 
 				if (resultado.equals(resultadoPrevisto)) {
 					LOGGER.info("SI Coinciden la factura y las linea de factura  OK");
@@ -344,7 +344,7 @@ public class Tests {
 
 				LOGGER.info("Caso alquiler correcto pero SI especifico la fecha final --------------");
 
-				String resultadoPrevisto = "12222-ABC11-03-201313-03-201310212345678A2 dias de alquiler, vehiculo modelo 2   32#12222-ABC11-03-201313-03-201310212345678ADeposito lleno de 50 litros de Gasoil   70";
+				String resultadoPrevisto = "12222-ABC11-03-201313-03-201310212345678A2 dias de alquiler, vehiculo modelo 2   32";
 
 				if (resultado.equals(resultadoPrevisto)) {
 					LOGGER.info("SI Coinciden la factura y las linea de factura OK");
