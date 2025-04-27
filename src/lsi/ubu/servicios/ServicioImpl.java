@@ -80,6 +80,28 @@ public class ServicioImpl implements Servicio {
             if (rs.next() && rs.getInt(1) == 0) {
                 throw new AlquilerCochesException(AlquilerCochesException.VEHICULO_NO_EXIST);
             }
+            
+            // 3. Verificar disponibilidad del vehículo
+            st = con.prepareStatement(
+                "SELECT COUNT(*) FROM reservas WHERE matricula = ? " +
+                "AND ((fecha_ini BETWEEN ? AND ?) OR (fecha_fin BETWEEN ? AND ?))");
+            
+            
+            java.sql.Date sqlFechaFin = fechaFin != null ? 
+                    new java.sql.Date(fechaFin.getTime()) : null;
+            
+            java.sql.Date sqlFechaIni = new java.sql.Date(fechaIni.getTime());
+            
+            st.setString(1, matricula);
+            st.setDate(2, sqlFechaIni);
+            st.setDate(3, sqlFechaFin);
+            st.setDate(4, sqlFechaIni);
+            st.setDate(5, sqlFechaFin);
+            
+            rs = st.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                throw new AlquilerCochesException(AlquilerCochesException.VEHICULO_OCUPADO);
+            }
 
 		} catch (SQLException e) {
 			// Completar por el alumno
