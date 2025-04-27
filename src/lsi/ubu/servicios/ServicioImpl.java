@@ -138,6 +138,23 @@ public class ServicioImpl implements Servicio {
             BigDecimal CosteGasolina = precioPorLitro.multiply(new BigDecimal(capacidadDeposito));
             BigDecimal importeTotalFactura = CosteGasolina.add(importeTotalLinea);
             
+            // 5. Insertar la factura
+            st = con.prepareStatement(
+            	    "INSERT INTO Facturas (nroFactura, importe, cliente) " +
+            	    "VALUES (seq_num_fact.NEXTVAL, ?, ?)");
+            	    
+        	st.setBigDecimal(1, importeTotalFactura);
+        	st.setString(2, nifCliente);
+        	st.executeUpdate();
+
+        	// obtenemos el valor actual de la secuencia con CURRVAL
+        	st= con.prepareStatement(
+        	    "SELECT seq_num_fact.CURRVAL FROM dual");
+        	rs = st.executeQuery();
+            
+            rs.next();
+            BigDecimal nroFactura = rs.getBigDecimal(1);
+            
 		} catch (SQLException e) {
 			if (con != null) {
                 try {
