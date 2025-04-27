@@ -155,6 +155,19 @@ public class ServicioImpl implements Servicio {
             rs.next();
             BigDecimal nroFactura = rs.getBigDecimal(1);
             
+            // 6. Insertar la línea de factura    
+            st = con.prepareStatement(
+                "INSERT INTO lineas_factura (NroFactura, concepto, importe) " +
+                "VALUES (?, ?, ?)");
+                
+            st.setBigDecimal(1, nroFactura);
+            st.setString(2, diasDiff + " dias de alquiler, vehiculo modelo " + modelo_coche);
+            st.setBigDecimal(3, importeTotalLinea);
+            st.executeUpdate();
+            
+            
+            con.commit(); // Confirmar transacción
+            
 		} catch (SQLException e) {
 			if (con != null) {
                 try {
