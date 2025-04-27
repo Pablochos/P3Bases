@@ -1,5 +1,6 @@
 package lsi.ubu.servicios;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -116,6 +117,26 @@ public class ServicioImpl implements Servicio {
             st.setDate(4, sqlFechaFin);
             
             st.executeUpdate();
+            
+            // Obtenemos el valor por dia del coche, capacidad del deposito y el precio
+            st = con.prepareStatement(
+                    "SELECT m.precio_cada_dia, m.capacidad_deposito, pc.precio_por_litro, m.id_modelo " +
+                    "FROM modelos m " +
+                    "JOIN vehiculos v ON m.id_modelo = v.id_modelo " +
+                    "JOIN precio_combustible pc ON m.tipo_combustible = pc.tipo_combustible " +
+                    "WHERE v.matricula = ?");
+                
+            st.setString(1, matricula);
+            rs = st.executeQuery();
+            rs.next();
+            BigDecimal precioPorDia = rs.getBigDecimal("precio_cada_dia");
+            int capacidadDeposito = rs.getInt("capacidad_deposito");
+            BigDecimal precioPorLitro = rs.getBigDecimal("precio_por_litro");
+            int modelo_coche = rs.getInt("id_modelo");
+                
+            BigDecimal importeTotalLinea = precioPorDia.multiply(new BigDecimal(diasDiff));
+            BigDecimal CosteGasolina = precioPorLitro.multiply(new BigDecimal(capacidadDeposito));
+            BigDecimal importeTotalFactura = CosteGasolina.add(importeTotalLinea);
             
 		} catch (SQLException e) {
 			// Completar por el alumno
