@@ -62,6 +62,24 @@ public class ServicioImpl implements Servicio {
 			 * calcular sumando los dias de alquiler (ver variable DIAS_DE_ALQUILER) a la
 			 * fecha ini.
 			 */
+			con.setAutoCommit(false); // Auto Commit off para no tener sorpresas
+            
+            // 1. Verificar si el cliente existe
+            st = con.prepareStatement("SELECT COUNT(*) FROM clientes WHERE NIF = ?");
+            st.setString(1, nifCliente);
+            rs = st.executeQuery();
+            if (rs.next() && rs.getInt(1) == 0) {
+                throw new AlquilerCochesException(AlquilerCochesException.CLIENTE_NO_EXIST);
+            }
+            
+            // 2. Verificar si el vehículo existe
+            st = con.prepareStatement("SELECT COUNT(*) FROM vehiculos WHERE matricula = ?");
+            st.setString(1, matricula);
+            rs = st.executeQuery();
+            
+            if (rs.next() && rs.getInt(1) == 0) {
+                throw new AlquilerCochesException(AlquilerCochesException.VEHICULO_NO_EXIST);
+            }
 
 		} catch (SQLException e) {
 			// Completar por el alumno
