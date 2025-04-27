@@ -139,14 +139,45 @@ public class ServicioImpl implements Servicio {
             BigDecimal importeTotalFactura = CosteGasolina.add(importeTotalLinea);
             
 		} catch (SQLException e) {
-			// Completar por el alumno
+			if (con != null) {
+                try {
+                    con.rollback(); // Si ocurre un error hacemos rollback
+                } catch (SQLException e1) {
+                    LOGGER.error("Error al hacer rollback");
+                }
+            }
+            
+            if (e instanceof AlquilerCochesException) {
+                throw e;
+            } else {
+                LOGGER.error(e.getMessage());
+                throw e;
+            }
 
-			LOGGER.debug(e.getMessage());
-
-			throw e;
 
 		} finally {
-			/* A rellenar por el alumnado*/
+			// Cerramos los recursos abiertos
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    LOGGER.error("Error al cerrar ResultSet", e);
+                }
+            }
+            if (st != null) {
+                try {
+                    st.close();
+                } catch (SQLException e) {
+                    LOGGER.error("Error al cerrar PreparedStatement", e);
+                }
+            }
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (SQLException e) {
+                    LOGGER.error("Error al cerrar Connection", e);
+                }
+            }
 		}
 	}
 }
