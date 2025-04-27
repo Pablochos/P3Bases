@@ -99,10 +99,24 @@ public class ServicioImpl implements Servicio {
             st.setDate(5, sqlFechaFin);
             
             rs = st.executeQuery();
-            if (rs.next() && rs.getInt(1) > 0) {
-                throw new AlquilerCochesException(AlquilerCochesException.VEHICULO_OCUPADO);
-            }
+           
 
+            if (rs.next() && rs.getInt(1) > 0) {
+            	throw new AlquilerCochesException(AlquilerCochesException.VEHICULO_OCUPADO);
+            }
+            
+            // 4. Insertar la reserva
+            st = con.prepareStatement(
+                "INSERT INTO reservas (idReserva, cliente, matricula, fecha_ini, fecha_fin) " +
+                "VALUES (seq_reservas.nextval, ?, ?, ?, ?)");
+            
+            st.setString(1, nifCliente);
+            st.setString(2, matricula);
+            st.setDate(3, sqlFechaIni);
+            st.setDate(4, sqlFechaFin);
+            
+            st.executeUpdate();
+            
 		} catch (SQLException e) {
 			// Completar por el alumno
 
