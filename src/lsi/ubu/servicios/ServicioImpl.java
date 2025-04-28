@@ -118,9 +118,9 @@ public class ServicioImpl implements Servicio {
             
             st.executeUpdate();
             
-            // Obtenemos el valor por dia del coche, capacidad del deposito y el precio
+            // Obtenemos el valor por dia del coche, capacidad del , tipo combustible y el precio
             st = con.prepareStatement(
-                    "SELECT m.precio_cada_dia, m.capacidad_deposito, pc.precio_por_litro, m.id_modelo " +
+                    "SELECT m.precio_cada_dia, m.capacidad_deposito, pc.precio_por_litro, m.id_modelo, pc.tipo_combustible " +
                     "FROM modelos m " +
                     "JOIN vehiculos v ON m.id_modelo = v.id_modelo " +
                     "JOIN precio_combustible pc ON m.tipo_combustible = pc.tipo_combustible " +
@@ -133,6 +133,7 @@ public class ServicioImpl implements Servicio {
             int capacidadDeposito = rs.getInt("capacidad_deposito");
             BigDecimal precioPorLitro = rs.getBigDecimal("precio_por_litro");
             int modelo_coche = rs.getInt("id_modelo");
+            String tipo_combustible = rs.getString("tipo_combustible");
                 
             BigDecimal importeTotalLinea = precioPorDia.multiply(new BigDecimal(diasDiff));
             BigDecimal CosteGasolina = precioPorLitro.multiply(new BigDecimal(capacidadDeposito));
@@ -155,7 +156,7 @@ public class ServicioImpl implements Servicio {
             rs.next();
             BigDecimal nroFactura = rs.getBigDecimal(1);
             
-            // 6. Insertar la línea de factura    
+            // 6. Insertar la línea de factura 1 
             st = con.prepareStatement(
                 "INSERT INTO lineas_factura (NroFactura, concepto, importe) " +
                 "VALUES (?, ?, ?)");
@@ -163,6 +164,12 @@ public class ServicioImpl implements Servicio {
             st.setBigDecimal(1, nroFactura);
             st.setString(2, diasDiff + " dias de alquiler, vehiculo modelo " + modelo_coche);
             st.setBigDecimal(3, importeTotalLinea);
+            st.executeUpdate();
+            
+            // 7. Insertar la línea de factura 2
+            st.setBigDecimal(1, nroFactura);
+            st.setString(2, "Deposito lleno de " + capacidadDeposito + " litros de " + tipo_combustible );
+            st.setBigDecimal(3, CosteGasolina);
             st.executeUpdate();
             
             
